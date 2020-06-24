@@ -7,12 +7,12 @@ from .dataset import HairDataset
 from .transforms import get_test_transforms, get_train_transforms
 
 
-def get_data_loaders() -> Tuple[DataLoader, DataLoader]:
-    data_path = Path("/home/alshev/Projects/hair_segmentation_test_assignment/datasets/processed/")
-    dataset_name = "celeba_hq"
+def get_data_loaders(config: dict) -> Tuple[DataLoader, DataLoader]:
+    data_path = Path(config["data_path"])
+    dataset_name = config["data"]["train"]["dataset_name"]
     dataset_path = data_path / dataset_name
 
-    train_transforms = get_train_transforms(dataset_name)
+    train_transforms = get_train_transforms(dataset_name, size=tuple(config["data"]["train"]["size"]))
     train_dataset = HairDataset(
         dataset_path=dataset_path,
         mode="train",
@@ -22,12 +22,12 @@ def get_data_loaders() -> Tuple[DataLoader, DataLoader]:
     )
     train_dataloader = DataLoader(
         dataset=train_dataset,
-        batch_size=10,
+        batch_size=config["data"]["train"]["batch_size"],
         shuffle=True,
-        num_workers=5,
+        num_workers=config["data"]["train"]["num_workers"],
     )
 
-    val_transforms = get_test_transforms(dataset_name)
+    val_transforms = get_test_transforms(dataset_name, size=tuple(config["data"]["val"]["size"]))
     val_dataset = HairDataset(
         dataset_path=dataset_path,
         mode="val",
@@ -37,9 +37,9 @@ def get_data_loaders() -> Tuple[DataLoader, DataLoader]:
     )
     val_dataloader = DataLoader(
         dataset=val_dataset,
-        batch_size=5,
+        batch_size=config["data"]["val"]["batch_size"],
         shuffle=False,
-        num_workers=5
+        num_workers=config["data"]["val"]["num_workers"]
     )
 
     return train_dataloader, val_dataloader
