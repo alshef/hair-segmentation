@@ -79,6 +79,8 @@ class UNet(nn.Module):
 
         self.output = nn.Conv2d(in_channels=64, out_channels=1, kernel_size=1, bias=False)
 
+        self._initialize_weights()
+
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         encode_1 = self.encode_layer_1(x)
         encode_2 = self.encode_layer_2(encode_1)
@@ -98,3 +100,19 @@ class UNet(nn.Module):
         decode_5 = self.decode_layer_5(self.upsample_5(decode_4))
 
         return self.output(decode_5)
+
+    def _initialize_weights(self):
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                nn.init.kaiming_normal_(m.weight, mode='fan_out')
+                if m.bias is not None:
+                    nn.init.zeros_(m.bias)
+
+            elif isinstance(m, nn.BatchNorm2d):
+                nn.init.constant_(m.weight, 1)
+                nn.init.constant_(m.bias, 0)
+
+            elif isinstance(m, nn.Linear):
+                nn.init.xavier_uniform_(m.weight)
+                if m.bias is not None:
+                    nn.init.constant_(m.bias, 0)
