@@ -14,6 +14,7 @@ def get_train_transforms(dataset_name: str,
         resizer,
         A.HorizontalFlip(p=0.5),
         A.Rotate(limit=5, p=0.5),
+        A.JpegCompression(quality_lower=80, quality_upper=100)
     ])
 
     image_transforms = T.Compose([
