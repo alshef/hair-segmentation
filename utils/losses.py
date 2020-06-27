@@ -34,3 +34,23 @@ class ImageGradientLoss(_Loss):
         image_gradient_loss = image_gradient_loss if image_gradient_loss > 0 else 0
 
         return image_gradient_loss
+
+
+class HairMattingLoss(_Loss):
+    def __init__(self,
+                 device,
+                 gradient_loss_weight: float = 0.5,
+                 size_average=None,
+                 reduce=None,
+                 reduction: str = 'mean') -> None:
+        super(HairMattingLoss, self).__init__(size_average, reduce, reduction)
+        self.device = device
+        self.bce_loss = nn.BCEWithLogitsLoss()
+        self.gradient_loss = ImageGradientLoss(device)
+        self.gradient_loss_weight = gradient_loss_weight
+
+    def forward(self, logits: torch.Tensor, masks: torch.Tensor, gray_images: torch.Tensor) -> torch.Tensor:
+        bce_loss = self.bce_loss(logits, masks)
+        gradient_loss = self.gradient_loss(logits, gray_images)
+        loss = bce_loss + self.gradient_loss_weight * gradient_loss
+        return loss
