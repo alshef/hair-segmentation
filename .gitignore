@@ -2,3 +2,4 @@ datasets/**
 papers/**
 notebooks/**
 outputs/**
+__pycache__
