@@ -45,6 +45,7 @@ class Trainer:
 
             self.writer.add_scalars('Losses', {"train": train_epoch_loss, "val": val_epoch_loss}, epoch)
         self.writer.close()
+        torch.save(self.model.state_dict(), self.exp_path / "model.pth")
 
     def train(self, train_loader, loss, optimizer) -> float:
         running_loss = 0.0
