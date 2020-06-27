@@ -9,6 +9,7 @@ import numpy as np
 
 import models
 from data import get_data_loaders
+from .meters import AverageMeter
 
 
 class Trainer:
@@ -49,7 +50,7 @@ class Trainer:
         torch.save(self.model.state_dict(), self.exp_path / "model.pth")
 
     def train(self, train_loader, loss, optimizer) -> float:
-        running_loss = 0.0
+        bce_losses = AverageMeter()
         self.model.train()
 
         for images, masks in train_loader:
@@ -63,15 +64,15 @@ class Trainer:
             batch_loss.backward()
             optimizer.step()
 
-            running_loss += batch_loss.item()
+            bce_losses.update(batch_loss, images.size()[0])
 
-        epoch_loss = running_loss / len(train_loader)
+        epoch_loss = bce_losses.value()
         print(f'Train loss: {epoch_loss}')
 
         return epoch_loss
 
     def validate(self, val_loader, loss) -> float:
-        running_loss = 0.0
+        bce_losses = AverageMeter()
         self.model.eval()
 
         for images, masks in val_loader:
@@ -82,9 +83,9 @@ class Trainer:
                 output = self.model(images)
                 batch_loss = loss(output, masks)
 
-            running_loss += batch_loss.item()
+            bce_losses.update(batch_loss, images.size()[0])
 
-        epoch_loss = running_loss / len(val_loader)
+        epoch_loss = bce_losses.value()
         print(f'Val loss: {epoch_loss}')
 
         return epoch_loss
