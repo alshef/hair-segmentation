@@ -5,6 +5,7 @@ import torch
 from torch.utils import data
 from torchvision.transforms import Compose as T_Compose
 from albumentations.core.composition import Compose as A_Compose
+import torchvision.transforms.functional as TF
 import cv2
 
 
@@ -12,6 +13,7 @@ class HairDataset(data.Dataset):
     def __init__(self,
                  dataset_path: Path,
                  mode: str,
+                 gray: bool,
                  joint_transforms: A_Compose,
                  image_transforms: T_Compose,
                  mask_transforms: T_Compose) -> None:
@@ -21,6 +23,8 @@ class HairDataset(data.Dataset):
 
         self.image_path_list = sorted(list((dataset_path / mode / "images").iterdir()))
         self.mask_path_list = sorted(list((dataset_path / mode / "masks").iterdir()))
+
+        self.gray = gray
 
     def __len__(self) -> int:
         return len(self.image_path_list)
@@ -40,4 +44,9 @@ class HairDataset(data.Dataset):
         image = self.image_transforms(augmented["image"])
         mask = self.mask_transforms(augmented["mask"])
 
-        return image, mask
+        if self.gray:
+            gray_image = cv2.cvtColor(augmented["image"], cv2.COLOR_RGB2GRAY)
+            gray_tensor = TF.to_tensor(gray_image)
+            return image, mask, gray_tensor
+        else:
+            return image, mask

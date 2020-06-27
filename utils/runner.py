@@ -23,6 +23,7 @@ class Trainer:
         self._fix_all_seeds(config["seed"])
         self.device = torch.device(f"cuda:{config['gpu']}")
         self.model = models.__dict__[self.config["model"]["type"]]()
+        self.gray = config["data"]["gray"]
 
     def _get_dataloaders(self):
         train_dataloader, val_dataloader = get_data_loaders(self.config)
@@ -69,12 +70,20 @@ class Trainer:
         bce_losses = AverageMeter()
         self.model.train()
 
-        for images, masks in train_loader:
+        for data in train_loader:
+            if self.gray:
+                images, masks, gray_images = data
+                gray_images = gray_images.to(self.device)
+            else:
+                images, masks = data
             images = images.to(self.device)
             masks = masks.to(self.device)
 
             output = self.model(images)
-            batch_loss = loss(output, masks)
+            if self.gray:
+                batch_loss = loss(output, masks, gray_images)
+            else:
+                batch_loss = loss(output, masks)
 
             optimizer.zero_grad()
             batch_loss.backward()
@@ -93,14 +102,22 @@ class Trainer:
         bce_losses = AverageMeter()
         self.model.eval()
 
-        for images, masks in val_loader:
+        for data in val_loader:
+            if self.gray:
+                images, masks, gray_images = data
+                gray_images = gray_images.to(self.device)
+            else:
+                images, masks = data
             n = images.size()[0]
             images = images.to(self.device)
             masks = masks.to(self.device)
 
             with torch.no_grad():
                 output = self.model(images)
-                batch_loss = loss(output, masks)
+                if self.gray:
+                    batch_loss = loss(output, masks, gray_images)
+                else:
+                    batch_loss = loss(output, masks)
                 iou = iou_metric.compute(output, masks)
 
             bce_losses.update(batch_loss.item(), n)

@@ -16,6 +16,7 @@ def get_data_loaders(config: dict) -> Tuple[DataLoader, DataLoader]:
     train_dataset = HairDataset(
         dataset_path=dataset_path,
         mode="train",
+        gray=config["data"]["gray"],
         joint_transforms=train_transforms[0],
         image_transforms=train_transforms[1],
         mask_transforms=train_transforms[2]
@@ -31,6 +32,7 @@ def get_data_loaders(config: dict) -> Tuple[DataLoader, DataLoader]:
     val_dataset = HairDataset(
         dataset_path=dataset_path,
         mode="val",
+        gray=config["data"]["gray"],
         joint_transforms=val_transforms[0],
         image_transforms=val_transforms[1],
         mask_transforms=val_transforms[2]
