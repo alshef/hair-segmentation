@@ -42,6 +42,7 @@ class Trainer:
         self.model = self.model.to(self.device)
         loss = loss.to(self.device)
 
+        best_iou = 0.0
         for epoch in range(n_epochs):
             print(f"Epoch {epoch}/{n_epochs}")
             train_epoch_loss = self.train(train_loader, loss, optimizer)
@@ -49,6 +50,11 @@ class Trainer:
 
             self.writer.add_scalars('Losses', {"train": train_epoch_loss, "val": val_epoch_loss}, epoch)
             self.writer.add_scalar("Metrics/IoU/val", val_epoch_iou, epoch)
+
+            if val_epoch_iou > best_iou:
+                best_iou = val_epoch_iou
+                torch.save(self.model.state_dict(), self.exp_path / "best_checkpoint.pth")
+                print(f"Best epoch: {epoch}")
         self.writer.close()
         torch.save(self.model.state_dict(), self.exp_path / "model.pth")
 
