@@ -11,6 +11,13 @@ def update_config(config: dict, params: dict) -> dict:
     return config
 
 
+def check_config(config: dict) -> dict:
+    if (config["model"]["loss"] == "HairMatting") or config["data"]["gray"]:
+        config["model"]["loss"] = "HairMatting"
+        config["data"]["gray"] = True
+    return config
+
+
 def fit(**kwargs) -> dict:
     if "config" in kwargs.keys():
         config_path = kwargs["config"]
@@ -19,4 +26,5 @@ def fit(**kwargs) -> dict:
     with open(config_path) as config_file:
         config = yaml.load(config_file, Loader=yaml.FullLoader)
     config = update_config(config, kwargs)
+    config = check_config(config)
     return config
