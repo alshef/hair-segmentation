@@ -12,6 +12,7 @@ import models
 from data import get_data_loaders
 from .meters import AverageMeter
 from .metrics import IoUMetric
+from .losses import HairMattingLoss
 
 
 class Trainer:
@@ -28,7 +29,13 @@ class Trainer:
         return train_dataloader, val_dataloader
 
     def _get_loss(self):
-        return torch.nn.BCEWithLogitsLoss()
+        loss_name = self.config["model"]["loss"]
+        if loss_name == "BCEWithLogits":
+            return torch.nn.BCEWithLogitsLoss()
+        elif loss_name == "HairMatting":
+            return HairMattingLoss(self.device, 0.5)
+        else:
+            raise ValueError()
 
     def _get_optimizer(self):
         return torch.optim.Adam(self.model.parameters(), lr=float(self.config["optimizer"]["lr"]))
