@@ -31,7 +31,20 @@ class Trainer:
         return torch.optim.Adam(self.model.parameters(), lr=float(self.config["optimizer"]["lr"]))
 
     def run(self) -> None:
-        self.
+        loss = self._get_loss()
+        optimizer = self._get_optimizer()
+        train_loader, val_loader = self._get_dataloaders()
+        n_epochs = self.config["train"]["epochs"]
+
+        self.model.to(self.device)
+        loss.to(self.device)
+
+        for epoch in range(n_epochs):
+            train_epoch_loss = self.train(train_loader, loss, optimizer)
+            val_epoch_loss = self.validate(val_loader, loss)
+
+            self.writer.add_scalars('Losses', {"train": train_epoch_loss, "val": val_epoch_loss}, epoch)
+        self.writer.close()
 
     def train(self):
         pass
