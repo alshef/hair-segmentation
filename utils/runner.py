@@ -68,8 +68,24 @@ class Trainer:
 
         return epoch_loss
 
-    def validate(self):
-        pass
+    def validate(self, val_loader, loss) -> float:
+        running_loss = 0.0
+        self.model.eval()
+
+        for images, masks in val_loader:
+            images.to(self.device)
+            masks.to(self.device)
+
+            with torch.no_grad():
+                output = self.model(images)
+                batch_loss = loss(output, masks)
+
+            running_loss += batch_loss.item()
+
+        epoch_loss = running_loss / len(val_loader)
+        print(f'Val loss: {epoch_loss}')
+
+        return epoch_loss
 
     def _fix_all_seeds(self, seed: int = 42) -> None:
         torch.manual_seed(seed)
