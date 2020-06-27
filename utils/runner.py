@@ -7,6 +7,8 @@ import torch
 from torch.utils.tensorboard import SummaryWriter
 import numpy as np
 
+import models
+
 
 class Trainer:
     def __init__(self, config: dict, experiment_path: Path) -> None:
@@ -14,6 +16,9 @@ class Trainer:
         self.config = config
         self.writer = SummaryWriter(experiment_path)
         self._fix_all_seeds(config["seed"])
+
+    def _get_model(self) -> None:
+        self.model = models.__dict__[self.config["model"]["type"]]()
 
     def run(self) -> None:
         pass
