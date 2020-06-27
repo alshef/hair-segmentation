@@ -35,7 +35,7 @@ class Trainer:
         elif loss_name == "HairMatting":
             return HairMattingLoss(self.device, 0.5)
         else:
-            raise ValueError()
+            raise ValueError("Incorrect loss name in config")
 
     def _get_optimizer(self):
         return torch.optim.Adam(self.model.parameters(), lr=float(self.config["optimizer"]["lr"]))
