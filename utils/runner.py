@@ -67,7 +67,7 @@ class Trainer:
             batch_loss.backward()
             optimizer.step()
 
-            bce_losses.update(batch_loss, images.size()[0])
+            bce_losses.update(batch_loss.item(), images.size()[0])
 
         epoch_loss = bce_losses.value()
         print(f'Train loss: {epoch_loss}')
@@ -90,7 +90,7 @@ class Trainer:
                 batch_loss = loss(output, masks)
                 iou = iou_metric.compute(output, masks)
 
-            bce_losses.update(batch_loss, n)
+            bce_losses.update(batch_loss.item(), n)
             iou_results.update(iou.item(), n)
 
         epoch_loss = bce_losses.value()
