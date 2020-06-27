@@ -17,7 +17,7 @@ class Trainer:
         self.config = config
         self.writer = SummaryWriter(experiment_path)
         self._fix_all_seeds(config["seed"])
-        self.device = f"cuda:{config['gpu']}"
+        self.device = torch.device(f"cuda:{config['gpu']}")
         self.model = models.__dict__[self.config["model"]["type"]]()
 
     def _get_dataloaders(self):
@@ -36,8 +36,8 @@ class Trainer:
         train_loader, val_loader = self._get_dataloaders()
         n_epochs = self.config["train"]["epochs"]
 
-        self.model.to(self.device)
-        loss.to(self.device)
+        self.model = self.model.to(self.device)
+        loss = loss.to(self.device)
 
         for epoch in range(n_epochs):
             train_epoch_loss = self.train(train_loader, loss, optimizer)
@@ -51,12 +51,12 @@ class Trainer:
         running_loss = 0.0
         self.model.train()
 
-        for i, (images, target) in enumerate(train_loader):
-            images.to(self.device)
-            target.to(self.device)
+        for images, masks in train_loader:
+            images = images.to(self.device)
+            masks = masks.to(self.device)
 
             output = self.model(images)
-            batch_loss = loss(output, target)
+            batch_loss = loss(output, masks)
 
             optimizer.zero_grad()
             batch_loss.backward()
@@ -74,8 +74,8 @@ class Trainer:
         self.model.eval()
 
         for images, masks in val_loader:
-            images.to(self.device)
-            masks.to(self.device)
+            images = images.to(self.device)
+            masks = masks.to(self.device)
 
             with torch.no_grad():
                 output = self.model(images)
