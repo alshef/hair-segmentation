@@ -22,10 +22,15 @@ class Trainer:
     def _get_model(self) -> None:
         self.model = models.__dict__[self.config["model"]["type"]]()
 
-    def _get_dataloaders(self) -> None:
-        self.train_dataloader, self.val_dataloader = get_data_loaders(self.config)
-        self.n_train_examples = len(self.train_dataloader)
-        self.n_val_examples = len(self.val_dataloader)
+    def _get_dataloaders(self):
+        train_dataloader, val_dataloader = get_data_loaders(self.config)
+        return train_dataloader, val_dataloader
+
+    def _get_loss(self):
+        return torch.nn.BCEWithLogitsLoss()
+
+    def _get_optimizer(self):
+        return torch.optim.Adam(self.model.parameters(), lr=float(self.config["optimizer"]["lr"]))
 
     def run(self) -> None:
         pass
