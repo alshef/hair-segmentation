@@ -46,8 +46,27 @@ class Trainer:
             self.writer.add_scalars('Losses', {"train": train_epoch_loss, "val": val_epoch_loss}, epoch)
         self.writer.close()
 
-    def train(self):
-        pass
+    def train(self, train_loader, loss, optimizer) -> float:
+        running_loss = 0.0
+        self.model.train()
+
+        for i, (images, target) in enumerate(train_loader):
+            images.to(self.device)
+            target.to(self.device)
+
+            output = self.model(images)
+            batch_loss = loss(output, target)
+
+            optimizer.zero_grad()
+            batch_loss.backward()
+            optimizer.step()
+
+            running_loss += batch_loss.item()
+
+        epoch_loss = running_loss / len(train_loader)
+        print(f'Train loss: {epoch_loss}')
+
+        return epoch_loss
 
     def validate(self):
         pass
