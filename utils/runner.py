@@ -40,6 +40,7 @@ class Trainer:
         loss = loss.to(self.device)
 
         for epoch in range(n_epochs):
+            print(f"Epoch {epoch}/{n_epochs}")
             train_epoch_loss = self.train(train_loader, loss, optimizer)
             val_epoch_loss = self.validate(val_loader, loss)
 
