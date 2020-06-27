@@ -17,6 +17,7 @@ class Trainer:
         self.config = config
         self.writer = SummaryWriter(experiment_path)
         self._fix_all_seeds(config["seed"])
+        self.device = f"cuda:{config['gpu']}"
 
     def _get_model(self) -> None:
         self.model = models.__dict__[self.config["model"]["type"]]()
