@@ -1,6 +1,7 @@
 import sys
 sys.path.append("..")
 from pathlib import Path
+from typing import Tuple
 import random
 
 import torch
@@ -10,6 +11,7 @@ import numpy as np
 import models
 from data import get_data_loaders
 from .meters import AverageMeter
+from .metrics import IoUMetric
 
 
 class Trainer:
@@ -43,9 +45,10 @@ class Trainer:
         for epoch in range(n_epochs):
             print(f"Epoch {epoch}/{n_epochs}")
             train_epoch_loss = self.train(train_loader, loss, optimizer)
-            val_epoch_loss = self.validate(val_loader, loss)
+            val_epoch_loss, val_epoch_iou = self.validate(val_loader, loss)
 
             self.writer.add_scalars('Losses', {"train": train_epoch_loss, "val": val_epoch_loss}, epoch)
+            self.writer.add_scalar("Metrics/IoU/val", val_epoch_iou, epoch)
         self.writer.close()
         torch.save(self.model.state_dict(), self.exp_path / "model.pth")
 
@@ -71,24 +74,31 @@ class Trainer:
 
         return epoch_loss
 
-    def validate(self, val_loader, loss) -> float:
+    def validate(self, val_loader, loss) -> Tuple[float, float]:
+        iou_metric = IoUMetric()
+        iou_results = AverageMeter()
         bce_losses = AverageMeter()
         self.model.eval()
 
         for images, masks in val_loader:
+            n = images.size()[0]
             images = images.to(self.device)
             masks = masks.to(self.device)
 
             with torch.no_grad():
                 output = self.model(images)
                 batch_loss = loss(output, masks)
+                iou = iou_metric.compute(output, masks)
 
-            bce_losses.update(batch_loss, images.size()[0])
+            bce_losses.update(batch_loss, n)
+            iou_results.update(iou.item(), n)
 
         epoch_loss = bce_losses.value()
+        epoch_iou = iou_results.value()
         print(f'Val loss: {epoch_loss}')
+        print(f"Val IoU: {epoch_iou}")
 
-        return epoch_loss
+        return epoch_loss, epoch_iou
 
     def _fix_all_seeds(self, seed: int = 42) -> None:
         torch.manual_seed(seed)
