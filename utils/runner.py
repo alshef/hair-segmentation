@@ -8,6 +8,7 @@ from torch.utils.tensorboard import SummaryWriter
 import numpy as np
 
 import models
+from data import get_data_loaders
 
 
 class Trainer:
@@ -19,6 +20,11 @@ class Trainer:
 
     def _get_model(self) -> None:
         self.model = models.__dict__[self.config["model"]["type"]]()
+
+    def _get_dataloaders(self) -> None:
+        self.train_dataloader, self.val_dataloader = get_data_loaders(self.config)
+        self.n_train_examples = len(self.train_dataloader)
+        self.n_val_examples = len(self.val_dataloader)
 
     def run(self) -> None:
         pass
