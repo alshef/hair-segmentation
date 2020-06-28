@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Tuple
 
 import torch
+import torchvision.transforms as transforms
 from PIL import Image, ImageOps
 
 import models
@@ -57,3 +58,10 @@ def prepare_image(image_path: Path) -> Tuple[Image, Tuple[int, int], Tuple[int, 
 
     out_image = pad_image_for_model(image)
     return out_image, raw_size, new_size, raw_image
+
+
+def prepare_batch(image: Image, image_transforms: transforms.Compose) -> torch.Tensor:
+    image_tensor = image_transforms(image)
+    image_batch = torch.unsqueeze(image_tensor, 0)
+
+    return image_batch
