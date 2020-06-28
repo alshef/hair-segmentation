@@ -6,7 +6,7 @@ import torch
 import torchvision.transforms as transforms
 
 
-def pad_image_for_model(image, model_depth: int = 5, fill_const: int = 0) -> Image:
+def pad_image_for_model(image, model_depth: int = 5, fill_const: int = 0) -> Image.Image:
     width, height = image.size
     scale = 2 ** model_depth
 
@@ -38,7 +38,7 @@ def pad_image_for_model(image, model_depth: int = 5, fill_const: int = 0) -> Ima
     return image
 
 
-def prepare_image(image_path: Path) -> Tuple[Image, Tuple[int, int], Tuple[int, int]. Image]:
+def prepare_image(image_path: Path) -> Tuple[Image.Image, Tuple[int, int], Tuple[int, int], Image.Image]:
     raw_image = Image.open(image_path).convert("RGB")
     raw_size = raw_image.size
     image = raw_image.copy()
@@ -53,7 +53,7 @@ def prepare_image(image_path: Path) -> Tuple[Image, Tuple[int, int], Tuple[int, 
 def make_mask_from_logits(logits: torch.Tensor,
                           raw_size: Tuple[int, int],
                           size_after_resizing: Tuple[int, int],
-                          threshold: float = 0.5) -> Image:
+                          threshold: float = 0.5) -> Image.Image:
     predicts = torch.sigmoid(logits)[0, 0]
     predicts[predicts > threshold] = 1
     predicts[predicts < threshold] = 0
