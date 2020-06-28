@@ -40,7 +40,7 @@ def define_argparser() -> argparse.ArgumentParser:
                         help="Model type. Used to load model state_dict")
     parser.add_argument("--path-to-images", type=str, help="Path to the folder with images to segment")
     parser.add_argument("--path-to-masks", type=str,
-                        help="Path to dir where masks should be saved. Dir 'masks' will be created there")
+                        help="Path to dir where masks should be saved")
     parser.add_argument("--threshold", type=float, default=0.5, help="Threshold of segmentation")
 
     return parser
@@ -50,8 +50,7 @@ def main():
     cli_parser = define_argparser()
     args = cli_parser.parse_args()
 
-    path_to_masks = Path(args.path_to_masks) / "masks"
-    path_to_masks.mkdir(parents=True)
+    path_to_masks = Path(args.path_to_masks)
 
     image_transforms = transforms.Compose([
         transforms.ToTensor(),
