@@ -1,3 +1,6 @@
+## Train
+**Attention:** Train step does not work "out of the box" from the github repo, because I did not add data preparation scripts.
+
 ## Datasets
 - [CelebAMask-HQ](https://github.com/switchablenorms/CelebAMask-HQ)
 - [Figaro-1k](http://projects.i-ctm.eu/it/progetto/figaro-1k)
