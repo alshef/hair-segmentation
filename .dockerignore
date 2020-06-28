@@ -1,0 +1,5 @@
+.git
+datasets
+papers
+notebooks
+*/__pycache__
