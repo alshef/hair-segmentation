@@ -9,6 +9,7 @@
 docker build -t <your-image-name> .
 ```
 3. Run test.py inside the Docker image
+
 **Example:**
 - `/home/user/images` - path to directory with images on the local PC
 - `/home/user/masks` - path to directory where masks should be saved (**path must exist**)
