@@ -12,6 +12,8 @@ from utils.image_funcs import prepare_image, make_mask_from_logits
 
 
 model_types = [name for name in models.__dict__ if not name.startswith("__") and callable(models.__dict__[name])]
+experiments_path = Path("selected_outputs")
+available_models = [dir_path.name for dir_path in experiments_path.iterdir()]
 
 
 def get_model(model_path: str, model_type: str = "UNet") -> torch.nn.Module:
@@ -31,7 +33,8 @@ def prepare_batch(image: Image.Image, image_transforms: transforms.Compose) -> t
 
 def define_argparser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description='Test hair segmentator on dir with images')
-    parser.add_argument("--experiment-name", type=str,
+    parser.add_argument("--experiment-name", type=str, choices=available_models,
+                        default="UNet_celeba_hq_HairMatting_28062020_101930",
                         help='Experiment name. Used to load model')
     parser.add_argument("--model-type", type=str, default="UNet", choices=model_types,
                         help="Model type. Used to load model state_dict")
@@ -46,8 +49,6 @@ def define_argparser() -> argparse.ArgumentParser:
 def main():
     cli_parser = define_argparser()
     args = cli_parser.parse_args()
-
-    experiments_path = Path("outputs")
 
     path_to_masks = Path(args.path_to_masks) / "masks"
     path_to_masks.mkdir(parents=True)
