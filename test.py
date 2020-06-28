@@ -5,6 +5,7 @@ import argparse
 import torch
 import torchvision.transforms as transforms
 from PIL import Image, ImageOps
+from tqdm import tqdm
 
 import models
 from utils.image_funcs import prepare_image, make_mask_from_logits
@@ -59,7 +60,7 @@ def main():
     model = get_model(experiments_path / args.experiment_name / "best_checkpoint.pth")
 
     path_to_images = Path(args.path_to_images)
-    for image_path in path_to_images.glob("*.jpg"):
+    for image_path in tqdm(path_to_images.glob("*.jpg")):
         image_name = image_path.name
         image, raw_size, size_after_resizing, raw_image = prepare_image(image_path)
         batch = prepare_batch(image, image_transforms)
@@ -67,7 +68,7 @@ def main():
         with torch.no_grad():
             logits = model(batch)
 
-        mask = make_mask_from_logits(logits, raw_size, size_after_resizing)
+        mask = make_mask_from_logits(logits, raw_size, size_after_resizing, threshold=args.threshold)
         mask.save(path_to_masks / image_name)
 
 
