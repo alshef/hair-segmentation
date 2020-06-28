@@ -10,6 +10,9 @@ import models
 from utils.image_funcs import prepare_image, make_mask_from_logits
 
 
+model_types = [name for name in models.__dict__ if not name.startswith("__") and callable(models.__dict__[name])]
+
+
 def get_model(model_path: str, model_type: str = "UNet") -> torch.nn.Module:
     model = models.__dict__[model_type]()
     model.load_state_dict(torch.load(model_path, map_location="cpu"))
@@ -18,7 +21,7 @@ def get_model(model_path: str, model_type: str = "UNet") -> torch.nn.Module:
     return model
 
 
-def prepare_batch(image: Image, image_transforms: transforms.Compose) -> torch.Tensor:
+def prepare_batch(image: Image.Image, image_transforms: transforms.Compose) -> torch.Tensor:
     image_tensor = image_transforms(image)
     image_batch = torch.unsqueeze(image_tensor, 0)
 
