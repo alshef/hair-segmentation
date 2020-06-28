@@ -28,12 +28,23 @@ def prepare_batch(image: Image.Image, image_transforms: transforms.Compose) -> t
     return image_batch
 
 
-def define_argparser():
-    pass
+def define_argparser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description='Test hair segmentator on dir with images')
+    parser.add_argument("--experiment-name", type=str,
+                        help='Experiment name. Used to load model')
+    parser.add_argument("--model-type", type=str, default="UNet", choices=model_types,
+                        help="Model type. Used to load model state_dict")
+    parser.add_argument("--path-to-images", type=str, help="Path to the folder with images to segment")
+    parser.add_argument("--path-to-masks", type=str,
+                        help="Path to dir where masks should be saved. Dir 'masks' will be created there")
+    parser.add_argument("--threshold", type=float, default=0.5, help="Threshold of segmentation")
+
+    return parser
 
 
 def main():
-    pass
+    cli_parser = define_argparser()
+    args = cli_parser.parse_args()
 
 
 if __name__ == "__main__":
