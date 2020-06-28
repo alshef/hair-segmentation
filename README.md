@@ -19,6 +19,28 @@ Then run next command to start `test.py` with default threshold (0.5) and model 
 docker run -it --rm -v /home/user/images:/data -v /home/user/masks:/output <your-image-name> python test.py --path-to-images /data --path-to-masks /output
 ```
 
+### Test script parameters
+```
+usage: test.py [-h]
+               [--experiment-name {UNet_celeba_hq_BCEWithLogits_28062020_101854,UNet_celeba_hq_HairMatting_28062020_101930}]
+               [--model-type {UNet}] [--path-to-images PATH_TO_IMAGES]
+               [--path-to-masks PATH_TO_MASKS] [--threshold THRESHOLD]
+
+Test hair segmentator on dir with images
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --experiment-name {UNet_celeba_hq_BCEWithLogits_28062020_101854,UNet_celeba_hq_HairMatting_28062020_101930}
+                        Experiment name. Used to load model
+  --model-type {UNet}   Model type. Used to load model state_dict
+  --path-to-images PATH_TO_IMAGES
+                        Path to the folder with images to segment
+  --path-to-masks PATH_TO_MASKS
+                        Path to dir where masks should be saved
+  --threshold THRESHOLD
+                        Threshold of segmentation
+```
+
 ## Datasets
 - [CelebAMask-HQ](https://github.com/switchablenorms/CelebAMask-HQ)
 - [Figaro-1k](http://projects.i-ctm.eu/it/progetto/figaro-1k)
