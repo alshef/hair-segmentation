@@ -1,0 +1,28 @@
+data:
+  gray: false
+  train:
+    batch_size: 16
+    dataset_name: celeba_hq
+    num_workers: 5
+    size:
+    - 256
+    - 256
+  val:
+    batch_size: 16
+    dataset_name: celeba_hq
+    num_workers: 5
+    size:
+    - 256
+    - 256
+data_path: /home/alshev/Projects/hair_segmentation_test_assignment/datasets/processed/
+gpu: 1
+model:
+  loss: BCEWithLogits
+  type: UNet
+optimizer:
+  lr: 3e-4
+  name: Adam
+output_path: /home/alshev/Projects/hair_segmentation_test_assignment/outputs
+seed: 42
+train:
+  epochs: 35
