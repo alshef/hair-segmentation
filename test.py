@@ -1,3 +1,6 @@
+from pathlib import Path
+from typing import Tuple
+
 import torch
 from PIL import Image, ImageOps
 
@@ -42,3 +45,15 @@ def pad_image_for_model(image, model_depth: int = 5, fill_const: int = 0) -> Ima
         fill=fill_const
     )
     return image
+
+
+def prepare_image(image_path: Path) -> Tuple[Image, Tuple[int, int], Tuple[int, int]. Image]:
+    raw_image = Image.open(image_path).convert("RGB")
+    raw_size = raw_image.size
+    image = raw_image.copy()
+
+    image.thumbnail((256, 256))
+    new_size = image.size
+
+    out_image = pad_image_for_model(image)
+    return out_image, raw_size, new_size, raw_image
