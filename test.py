@@ -46,6 +46,30 @@ def main():
     cli_parser = define_argparser()
     args = cli_parser.parse_args()
 
+    experiments_path = Path("outputs")
+
+    path_to_masks = Path(args.path_to_masks) / "masks"
+    path_to_masks.mkdir(parents=True)
+
+    image_transforms = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+
+    model = get_model(experiments_path / args.experiment_name / "best_checkpoint.pth")
+
+    path_to_images = Path(args.path_to_images)
+    for image_path in path_to_images.glob("*.jpg"):
+        image_name = image_path.name
+        image, raw_size, size_after_resizing, raw_image = prepare_image(image_path)
+        batch = prepare_batch(image, image_transforms)
+
+        with torch.no_grad():
+            logits = model(batch)
+
+        mask = make_mask_from_logits(logits, raw_size, size_after_resizing)
+        mask.save(path_to_masks / image_name)
+
 
 if __name__ == "__main__":
     main()
