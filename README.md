@@ -9,9 +9,11 @@
 docker build -t <your-image-name> .
 ```
 3. Run test.py inside the Docker image
+
 **Example:**
 - `/home/user/images` - path to directory with images on the local PC
 - `/home/user/masks` - path to directory where masks should be saved (**path must exist**)
+
 Then run next command to start `test.py` with default threshold (0.5) and model from selected_outputs (UNet_celeba_hq_HairMatting_28062020_101930)
 ```
 docker run -it --rm -v /home/user/images:/data -v /home/user/masks:/output <your-image-name> python test.py --path-to-images /data --path-to-masks /output
